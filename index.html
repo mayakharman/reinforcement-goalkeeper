@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מעבדת השוער הלומד — למידת חיזוק אינטראקטיבית</title>
+<meta name="description" content="מעבדת השוער הלומד: פרויקט אקדמי אינטראקטיבי שמלמד את מושג הלמידה מחיזוקים (Reinforcement Learning) דרך משחק פנדל, בו שוער וירטואלי לומד מתגמולים.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main-content">דלג לתוכן הראשי</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">RL</span>
+      <div class="brand-text">
+        <p class="brand-title">מעבדת השוער הלומד</p>
+        <p class="brand-subtitle">למידת חיזוק דרך משחק אינטראקטיבי</p>
+      </div>
+    </div>
+
+    <nav class="main-nav" aria-label="ניווט ראשי">
+      <ul>
+        <li><a href="#concepts">מושגי יסוד</a></li>
+        <li><a href="#lab">המעבדה</a></li>
+        <li><a href="#training">אימון</a></li>
+        <li><a href="#comparison">השוואה</a></li>
+        <li><a href="#graph">ביצועים</a></li>
+        <li><a href="#quiz">שאלון</a></li>
+        <li><a href="#summary">סיכום</a></li>
+      </ul>
+    </nav>
+
+    <span class="badge">פרויקט לימודי ביישומי בינה מלאכותית</span>
+  </div>
+</header>
+
+<main id="main-content">
+
+  <!-- ===================== Hero / Opening Section ===================== -->
+  <section id="hero" class="hero" aria-labelledby="hero-heading">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <h1 id="hero-heading">שוער שמתחיל מאפס — ולומד מכל בעיטה</h1>
+        <p class="hero-lede">
+          באתר הזה תאמנו שוער וירטואלי בעזרת למידת חיזוק (Reinforcement Learning).
+          בכל בעיטה השוער בוחר כיוון קפיצה, מקבל תגמול חיובי על הצלה ותגמול שלילי
+          על גול, ולומד בהדרגה איזו החלטה משתלמת יותר בכל מצב.
+          תוכלו לצפות בזמן אמת איך אסטרטגיית ההחלטות שלו משתפרת מבעיטה לבעיטה.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#lab">התחלת החוויה</a>
+          <a class="btn btn-secondary" href="#concepts">איך זה עובד?</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="goal-illustration" role="img" aria-label="איור סכמטי של שער כדורגל עם שוער וכדור, על דשא ירוק">
+          <div class="hero-field" aria-hidden="true"></div>
+          <div class="goal-frame hero-goal-frame">
+            <span class="goal-shadow" aria-hidden="true"></span>
+            <div class="goal-structure" aria-hidden="true">
+              <span class="goal-net-side goal-net-side--left"></span>
+              <span class="goal-net-side goal-net-side--right"></span>
+              <span class="goal-net"></span>
+              <span class="goal-post goal-post--left"></span>
+              <span class="goal-post goal-post--right"></span>
+              <span class="goal-crossbar"></span>
+            </div>
+            <div class="goalkeeper hero-goalkeeper" aria-hidden="true">
+              <span class="gk-shadow"></span>
+              <span class="gk-leg gk-leg--left">
+                <span class="gk-sock"></span>
+                <span class="gk-shoe"></span>
+              </span>
+              <span class="gk-leg gk-leg--right">
+                <span class="gk-sock"></span>
+                <span class="gk-shoe"></span>
+              </span>
+              <span class="gk-shorts"></span>
+              <span class="gk-torso"></span>
+              <span class="gk-arm gk-arm--left">
+                <span class="gk-glove"></span>
+              </span>
+              <span class="gk-arm gk-arm--right">
+                <span class="gk-glove"></span>
+              </span>
+              <span class="gk-head"></span>
+            </div>
+          </div>
+          <div class="ball ball--lab hero-ball" aria-hidden="true">
+            <span class="ball-shadow"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Learning Concepts Section ===================== -->
+  <section id="concepts" class="concepts" aria-labelledby="concepts-heading">
+    <div class="container">
+      <h2 id="concepts-heading">מושגי היסוד של למידת חיזוק</h2>
+      <p class="section-lede">
+        שישה מרכיבים תיאורטיים שמרכיבים כל מערכת למידת חיזוק — וכיצד כל אחד מהם
+        מיוצג במעבדת השוער.
+      </p>
+
+      <div class="concepts-grid">
+        <article class="concept-card">
+          <div class="concept-icon" aria-hidden="true">A</div>
+          <h3>סוכן — השוער הממוחשב</h3>
+          <p>השוער הוירטואלי הוא ה"סוכן הלומד": הוא זה שבוחר פעולה בכל בעיטה, ומשתפר בהדרגה מתוך הניסיון שצבר.</p>
+        </article>
+
+        <article class="concept-card">
+          <div class="concept-icon" aria-hidden="true">E</div>
+          <h3>סביבה — השער, הבעיטות ודפוסי הבועט</h3>
+          <p>כל מה שמחוץ לשליטת הסוכן: השער, כיווני הבעיטה, וההרגלים או האקראיות של הבועט/ת מולו.</p>
+        </article>
+
+        <article class="concept-card">
+          <div class="concept-icon" aria-hidden="true">S</div>
+          <h3>מצב — המידע הזמין לפני הבעיטה</h3>
+          <p>התמונה שהסוכן רואה רגע לפני ההחלטה: לאיזה כיוון נבעטה הבעיטה הקודמת, ומהי המגמה הכללית של הבועט/ת.</p>
+        </article>
+
+        <article class="concept-card">
+          <div class="concept-icon" aria-hidden="true">Ac</div>
+          <h3>פעולה — שמאלה, מרכז או ימינה</h3>
+          <p>בכל בעיטה הסוכן בוחר בדיוק אחת משלוש אפשרויות: קפיצה שמאלה, הישארות במרכז, או קפיצה ימינה.</p>
+        </article>
+
+        <article class="concept-card">
+          <div class="concept-icon" aria-hidden="true">R</div>
+          <h3>תגמול — עצירה חיובית וגול שלילי</h3>
+          <p>משוב מספרי מיידי מהסביבה: תגמול חיובי כשהשוער עוצר את הכדור, ותגמול שלילי כשהכדור נכנס לשער.</p>
+        </article>
+
+        <article class="concept-card concept-card--goal">
+          <div class="concept-icon" aria-hidden="true">G</div>
+          <h3>מטרה — למקסם את התגמול המצטבר לאורך זמן</h3>
+          <p>המטרה של הסוכן אינה לנחש נכון פעם אחת, אלא לבנות אסטרטגיית קבלת החלטות שממקסמת את סך התגמולים לאורך הרבה בעיטות.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Game Laboratory + AI Decision Panel ===================== -->
+  <section id="lab" class="lab" aria-labelledby="lab-heading">
+    <div class="container">
+      <h2 id="lab-heading">המעבדה האינטראקטיבית</h2>
+      <p class="section-lede">
+        זהו המסך שבו המשחק מתרחש בפועל: כל בעיטה מפעילה את מנוע ה-Q-Learning
+        האמיתי, מעדכנת את טבלת ה-Q ואת הסטטיסטיקות, ומוצגת גם ויזואלית בזירה.
+      </p>
+
+      <div class="lab-grid">
+
+        <!-- Game Area -->
+        <article class="game-area" aria-labelledby="game-area-heading">
+          <h3 id="game-area-heading" class="visually-hidden">זירת המשחק</h3>
+
+          <div class="pitch">
+            <div class="field-surface" aria-hidden="true">
+              <span class="pitch-box"></span>
+              <span class="pitch-spot"></span>
+              <span class="pitch-goal-line"></span>
+            </div>
+
+            <div class="goal-frame goal-frame--lab">
+              <span class="goal-shadow" aria-hidden="true"></span>
+              <div class="goal-structure" aria-hidden="true">
+                <span class="goal-net-side goal-net-side--left"></span>
+                <span class="goal-net-side goal-net-side--right"></span>
+                <span id="goal-net-lab" class="goal-net"></span>
+                <span class="goal-post goal-post--left"></span>
+                <span class="goal-post goal-post--right"></span>
+                <span class="goal-crossbar"></span>
+              </div>
+
+              <div id="goalkeeper-lab" class="goalkeeper" aria-hidden="true">
+                <span class="gk-shadow"></span>
+                <span class="gk-leg gk-leg--left">
+                  <span class="gk-sock"></span>
+                  <span class="gk-shoe"></span>
+                </span>
+                <span class="gk-leg gk-leg--right">
+                  <span class="gk-sock"></span>
+                  <span class="gk-shoe"></span>
+                </span>
+                <span class="gk-shorts"></span>
+                <span class="gk-torso"></span>
+                <span class="gk-arm gk-arm--left">
+                  <span class="gk-glove"></span>
+                </span>
+                <span class="gk-arm gk-arm--right">
+                  <span class="gk-glove"></span>
+                </span>
+                <span class="gk-head"></span>
+              </div>
+            </div>
+
+            <div id="ball-lab" class="ball ball--lab" aria-hidden="true">
+              <span class="ball-shadow"></span>
+            </div>
+            <p id="kick-result" class="kick-result" role="status" aria-live="polite"></p>
+          </div>
+
+          <div class="kick-controls">
+            <p class="control-label" id="kick-direction-label">בחירת כיוון בעיטה</p>
+            <p class="kick-instruction">בחרו לאן לבעוט. השוער הממוחשב יבחר בעצמו לאן לזנק.</p>
+            <div class="kick-buttons" role="group" aria-labelledby="kick-direction-label">
+              <button type="button" class="btn btn-outline" data-direction="left">שמאלה</button>
+              <button type="button" class="btn btn-outline" data-direction="center">למרכז</button>
+              <button type="button" class="btn btn-outline" data-direction="right">ימינה</button>
+            </div>
+            <button type="button" id="perform-kick-btn" class="btn btn-primary btn-kick" disabled>בצע בעיטה</button>
+          </div>
+
+          <dl class="score-strip" aria-label="נתוני משחק נוכחיים">
+            <div class="score-item">
+              <dt>בעיטות</dt>
+              <dd id="score-kicks">0</dd>
+            </div>
+            <div class="score-item">
+              <dt>עצירות</dt>
+              <dd id="score-saves">0</dd>
+            </div>
+            <div class="score-item">
+              <dt>שערים</dt>
+              <dd id="score-goals">0</dd>
+            </div>
+            <div class="score-item">
+              <dt>אחוז הצלחה</dt>
+              <dd id="score-success-rate">0%</dd>
+            </div>
+          </dl>
+        </article>
+
+        <!-- AI Decision Panel -->
+        <aside class="ai-panel" aria-labelledby="ai-panel-heading">
+          <h3 id="ai-panel-heading">פאנל החלטת הבינה המלאכותית</h3>
+
+          <dl class="decision-list">
+            <div class="decision-item">
+              <dt>מצב נוכחי</dt>
+              <dd id="ai-state">—</dd>
+            </div>
+            <div class="decision-item">
+              <dt>פעולה שנבחרה</dt>
+              <dd id="ai-action">—</dd>
+            </div>
+            <div class="decision-item">
+              <dt>תגמול אחרון</dt>
+              <dd id="ai-last-reward">—</dd>
+            </div>
+            <div class="decision-item">
+              <dt>תגמול מצטבר</dt>
+              <dd id="ai-cumulative-reward">0</dd>
+            </div>
+            <div class="decision-item">
+              <dt>ערך ε (חקירה)</dt>
+              <dd id="ai-epsilon">1.00</dd>
+            </div>
+            <div class="decision-item">
+              <dt>רמת ניסיון</dt>
+              <dd id="ai-experience">מתחיל</dd>
+            </div>
+            <div class="decision-item">
+              <dt>סיבת הבחירה</dt>
+              <dd id="ai-reason">—</dd>
+            </div>
+          </dl>
+
+          <div class="q-values" aria-label="ערכי Q לכל פעולה אפשרית">
+            <p class="control-label">ערכי Q לכל פעולה</p>
+            <div class="q-values-grid">
+              <div class="q-card">
+                <span class="q-card-label">שמאלה</span>
+                <span class="q-card-value" id="q-value-left">Q: 0.00</span>
+              </div>
+              <div class="q-card">
+                <span class="q-card-label">מרכז</span>
+                <span class="q-card-value" id="q-value-center">Q: 0.00</span>
+              </div>
+              <div class="q-card">
+                <span class="q-card-label">ימינה</span>
+                <span class="q-card-value" id="q-value-right">Q: 0.00</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== Training Mode Section ===================== -->
+  <section id="training" class="training" aria-labelledby="training-heading">
+    <div class="container">
+      <h2 id="training-heading">מצב אימון</h2>
+      <p class="section-lede">
+        מצב אימון מריץ עשרות עד אלפי בעיטות מדומות ברצף מהיר, כדי לצפות בשיפור
+        אסטרטגיית הסוכן על פני זמן קצר.
+      </p>
+
+      <div class="training-grid">
+        <fieldset class="option-group">
+          <legend>פרופיל הבועט/ת</legend>
+          <label class="radio-option">
+            <input type="radio" name="kicker-profile" value="left-biased">
+            <span>נוטה שמאלה</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="kicker-profile" value="right-biased">
+            <span>נוטה ימינה</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="kicker-profile" value="changing-pattern">
+            <span>דפוס משתנה</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="kicker-profile" value="fully-random">
+            <span>אקראי לחלוטין</span>
+          </label>
+        </fieldset>
+
+        <fieldset class="option-group">
+          <legend>מספר סבבי אימון</legend>
+          <label class="radio-option">
+            <input type="radio" name="training-rounds" value="10">
+            <span>10</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="training-rounds" value="100">
+            <span>100</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="training-rounds" value="500">
+            <span>500</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="training-rounds" value="1000">
+            <span>1000</span>
+          </label>
+        </fieldset>
+      </div>
+
+      <div class="training-actions">
+        <button type="button" id="start-training-btn" class="btn btn-primary">התחל אימון</button>
+        <button type="button" id="stop-training-btn" class="btn btn-outline" disabled>עצור</button>
+        <button type="button" id="reset-learning-btn" class="btn btn-danger">אפס למידה</button>
+      </div>
+
+      <div class="training-progress">
+        <label class="control-label" for="training-progress-bar">התקדמות אימון</label>
+        <progress id="training-progress-bar" value="0" max="100">0%</progress>
+        <p id="training-status" class="training-status" role="status" aria-live="polite"></p>
+      </div>
+
+      <aside class="note-box" aria-label="הערה פדגוגית">
+        <p>
+          <strong>שימו לב:</strong> כאשר הבועט/ת בוחר/ת כיוון "אקראי לחלוטין" ללא כל
+          הטיה, אין בסביבה שום דפוס יציב שהסוכן יכול ללמוד לזהות ולנצל — ולכן גם
+          סוכן לומד מוצלח לא יוכל לשפר את שיעור ההצלות שלו מעבר לניחוש בסיסי.
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===================== Experience Comparison Section ===================== -->
+  <section id="comparison" class="comparison" aria-labelledby="comparison-heading">
+    <div class="container">
+      <h2 id="comparison-heading">השוואה: מצב התחלתי תיאורטי מול הסוכן הנוכחי</h2>
+      <p class="section-lede">
+        הכרטיס השמאלי הוא נקודת ההתחלה התיאורטית של כל סוכן חדש. הכרטיס הימני
+        מציג את הנתונים האמיתיים של הסוכן שלכם ברגע זה, כפי שהם נצברו מהמשחק
+        והאימון בפועל.
+      </p>
+
+      <div class="comparison-grid">
+        <article class="comparison-card">
+          <h3>סוכן מתחיל <span class="comparison-tag">מצב התחלתי תיאורטי</span></h3>
+          <dl class="comparison-list">
+            <div class="comparison-item"><dt>מספר אינטראקציות</dt><dd>0</dd></div>
+            <div class="comparison-item"><dt>ערך ε (חקירה)</dt><dd>1.00</dd></div>
+            <div class="comparison-item"><dt>ניסיון קודם</dt><dd>אין</dd></div>
+            <div class="comparison-item"><dt>ערכי Q</dt><dd>כולם מתחילים ב-0</dd></div>
+            <div class="comparison-item"><dt>אופי ההחלטות</dt><dd>חקירה כמעט מוחלטת (רוב הבחירות אקראיות)</dd></div>
+          </dl>
+        </article>
+
+        <div class="comparison-arrow" aria-hidden="true">←</div>
+        <span class="visually-hidden">השוואה בין מצב התחלתי תיאורטי לבין מצב הסוכן הנוכחי בפועל</span>
+
+        <article class="comparison-card comparison-card--trained">
+          <h3>סוכן נוכחי <span class="comparison-tag comparison-tag--live">מצב הסוכן הנוכחי</span></h3>
+          <dl class="comparison-list">
+            <div class="comparison-item"><dt>מספר אינטראקציות</dt><dd id="cmp-total-kicks">0</dd></div>
+            <div class="comparison-item"><dt>אחוז הצלחה בפועל</dt><dd id="cmp-success-rate">0%</dd></div>
+            <div class="comparison-item"><dt>ערך ε (חקירה)</dt><dd id="cmp-epsilon">1.00</dd></div>
+            <div class="comparison-item"><dt>רמת ניסיון</dt><dd id="cmp-experience">מתחיל</dd></div>
+            <div class="comparison-item"><dt>בחירות חקירה</dt><dd id="cmp-exploration">0</dd></div>
+            <div class="comparison-item"><dt>בחירות ניצול</dt><dd id="cmp-exploitation">0</dd></div>
+            <div class="comparison-item"><dt>תגמול מצטבר</dt><dd id="cmp-cumulative-reward">0</dd></div>
+          </dl>
+        </article>
+      </div>
+
+      <p id="comparison-interpretation" class="comparison-interpretation" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <!-- ===================== Performance Graph Section ===================== -->
+  <section id="graph" class="graph" aria-labelledby="graph-heading">
+    <div class="container">
+      <h2 id="graph-heading">גרף ביצועים</h2>
+      <p class="section-lede">
+        אחוז ההצלות המתגלגל על פני 25 האינטראקציות האחרונות, מחושב אך ורק
+        מתוך נתוני המשחק והאימון האמיתיים — הקו יכול לעלות, לרדת, או להישאר
+        יציב, בדיוק לפי מה שקרה בפועל.
+      </p>
+
+      <figure class="chart">
+        <div class="chart-stats" aria-hidden="true">
+          <div class="chart-stat">
+            <span class="chart-stat-label">אחוז מתגלגל נוכחי</span>
+            <span class="chart-stat-value" id="graph-current-pct">—</span>
+          </div>
+          <div class="chart-stat">
+            <span class="chart-stat-label">שיא מתגלגל</span>
+            <span class="chart-stat-value" id="graph-best-pct">—</span>
+          </div>
+          <div class="chart-stat">
+            <span class="chart-stat-label">מספר דגימות</span>
+            <span class="chart-stat-value" id="graph-sample-count">0</span>
+          </div>
+          <div class="chart-stat">
+            <span class="chart-stat-label">גודל חלון מתגלגל</span>
+            <span class="chart-stat-value">25</span>
+          </div>
+        </div>
+
+        <div class="chart-svg-wrap">
+          <svg
+            id="performance-svg"
+            class="performance-svg"
+            viewBox="0 0 600 260"
+            preserveAspectRatio="none"
+            role="img"
+            aria-labelledby="perf-svg-title"
+            aria-describedby="perf-svg-desc"
+            aria-hidden="true"
+          >
+            <title id="perf-svg-title">גרף אחוז ההצלות המתגלגל</title>
+            <desc id="perf-svg-desc">טרם בוצעו אינטראקציות — הגרף יופיע לאחר לפחות חמש בעיטות.</desc>
+            <g id="performance-svg-content"></g>
+          </svg>
+          <p id="graph-empty-state" class="graph-empty-state">
+            בצעו לפחות חמש אינטראקציות (משחק אנושי או אימון) כדי לראות את גרף הביצועים.
+          </p>
+        </div>
+
+        <figcaption>ציר X: מספר אינטראקציות מצטבר · ציר Y: אחוז הצלות מתגלגל (חלון של 25)</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ===================== Educational Quiz Section ===================== -->
+  <section id="quiz" class="quiz" aria-labelledby="quiz-heading">
+    <div class="container">
+      <h2 id="quiz-heading">שאלון קצר להבנת המושגים</h2>
+      <p class="section-lede">בחרו תשובה אחת לכל שאלה ולחצו על "בדיקת תשובות" כדי לקבל ציון והסבר לכל שאלה.</p>
+
+      <form class="quiz-form">
+        <fieldset class="quiz-question" data-question="q1">
+          <legend>1. מהו ה"סוכן" בפרויקט הזה?</legend>
+          <label class="radio-option">
+            <input type="radio" name="q1" value="a">
+            <span>השוער הוירטואלי שלומד ומקבל החלטות</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q1" value="b">
+            <span>הבועט/ת שמבצע/ת את הבעיטה</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q1" value="c">
+            <span>המשתמש/ת הצופה במסך</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q1" value="d">
+            <span>מסד הנתונים ששומר את התוצאות</span>
+          </label>
+          <p class="quiz-feedback" role="status"></p>
+        </fieldset>
+
+        <fieldset class="quiz-question" data-question="q2">
+          <legend>2. מהו ה"תגמול" שהסוכן מקבל?</legend>
+          <label class="radio-option">
+            <input type="radio" name="q2" value="a">
+            <span>ציון מספרי חיובי או שלילי בעקבות תוצאת הבעיטה</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q2" value="b">
+            <span>הזמן שלוקח לדף להיטען</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q2" value="c">
+            <span>כמות הצבעים המוצגים במסך</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q2" value="d">
+            <span>מספר השחקנים המשתתפים במשחק</span>
+          </label>
+          <p class="quiz-feedback" role="status"></p>
+        </fieldset>
+
+        <fieldset class="quiz-question" data-question="q3">
+          <legend>3. מדוע הסוכן לא יכול להשתפר בעקביות מול בועט/ת אקראי/ת לחלוטין?</legend>
+          <label class="radio-option">
+            <input type="radio" name="q3" value="a">
+            <span>כי אין בסביבה שום דפוס קבוע שניתן ללמוד ולנצל</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q3" value="b">
+            <span>כי המחשב לא מספיק חזק כדי להריץ את החישוב</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q3" value="c">
+            <span>כי אין מספיק צבעים בעיצוב האתר</span>
+          </label>
+          <label class="radio-option">
+            <input type="radio" name="q3" value="d">
+            <span>כי כפתורי הבעיטה מושבתים</span>
+          </label>
+          <p class="quiz-feedback" role="status"></p>
+        </fieldset>
+
+        <div class="quiz-actions">
+          <button type="submit" id="quiz-submit-btn" class="btn btn-primary">בדיקת תשובות</button>
+          <button type="button" id="quiz-retry-btn" class="btn btn-outline" hidden>נסה שוב</button>
+        </div>
+        <p id="quiz-score" class="quiz-score" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===================== Final Learning Summary Section ===================== -->
+  <section id="summary" class="summary" aria-labelledby="summary-heading">
+    <div class="container">
+      <h2 id="summary-heading">סיכום למידה</h2>
+
+      <ol class="summary-steps">
+        <li>הסוכן מקיים אינטראקציה עם סביבה.</li>
+        <li>הוא בוחר פעולה בהתאם לאסטרטגיית ההחלטות הנוכחית שלו.</li>
+        <li>הוא מקבל תגמול בעקבות הפעולה שביצע.</li>
+        <li>הוא מעדכן את הידע שצבר בהתאם לתגמול שהתקבל.</li>
+        <li>ניסיון חוזר ונשנה יכול לשפר את ההחלטות העתידיות שלו.</li>
+      </ol>
+
+      <h3 class="summary-subheading">מילון מושגים מהיר</h3>
+      <dl class="summary-glossary">
+        <div class="glossary-item"><dt>סוכן (Agent)</dt><dd>השוער הוירטואלי שבוחר פעולה ולומד מהתוצאה.</dd></div>
+        <div class="glossary-item"><dt>סביבה (Environment)</dt><dd>השער, כיווני הבעיטה והבועט/ת — כל מה שמחוץ לשליטת הסוכן.</dd></div>
+        <div class="glossary-item"><dt>מצב (State)</dt><dd>כיוון הבעיטה הקודמת ומגמת הבועט/ת האחרונה — המידע שעליו מתבססת ההחלטה.</dd></div>
+        <div class="glossary-item"><dt>פעולה (Action)</dt><dd>קפיצה שמאלה, הישארות במרכז, או קפיצה ימינה.</dd></div>
+        <div class="glossary-item"><dt>תגמול (Reward)</dt><dd>\u200E+1\u200E על הצלה, \u200E-1\u200E על גול — משוב מספרי מיידי מהסביבה.</dd></div>
+        <div class="glossary-item"><dt>מדיניות / אסטרטגיית החלטה (Policy)</dt><dd>הכלל שלפיו הסוכן בוחר פעולה בכל מצב, מבוסס על טבלת ה-Q.</dd></div>
+        <div class="glossary-item"><dt>חקירה (Exploration)</dt><dd>בחירת פעולה אקראית כדי לגלות מידע חדש על הסביבה.</dd></div>
+        <div class="glossary-item"><dt>ניצול (Exploitation)</dt><dd>בחירת הפעולה בעלת ערך ה-Q הגבוה ביותר הידוע כרגע.</dd></div>
+        <div class="glossary-item"><dt>טבלת Q (Q-table)</dt><dd>טבלה של 9 מצבים × 3 פעולות, עם ערך מוערך לכל שילוב אפשרי.</dd></div>
+        <div class="glossary-item"><dt>ניסיון חוזר (Repeated Experience)</dt><dd>כל בעיטה נוספת מעדכנת את טבלת ה-Q ותורמת ללמידה המצטברת.</dd></div>
+        <div class="glossary-item"><dt>תגמול מצטבר (Cumulative Reward)</dt><dd>סכום כל התגמולים לאורך זמן — המדד שהסוכן מנסה למקסם.</dd></div>
+      </dl>
+
+      <h3 class="summary-subheading">מה באמת למד המחשב?</h3>
+      <p class="summary-text">
+        התוכנה לא קיבלה מראש את הפעולה הנכונה לכל מצב. היא קיבלה אך ורק משוב
+        מספרי (תגמול) בעקבות כל בעיטה, עדכנה בעזרתו את ערכי ה-Q, ובהדרגה שינתה
+        את אסטרטגיית הבחירה שלה. שיפור אינו מובטח: מול סביבה ללא דפוס ניתן
+        ללמידה — כמו בועט/ת אקראי/ת לחלוטין — גם למידה תקינה לא תניב שיפור עקבי.
+      </p>
+
+      <h3 class="summary-subheading">מה בפרויקט אמיתי ומה המחשה חזותית?</h3>
+      <div class="summary-real-visual">
+        <div class="summary-real-visual-col">
+          <p class="summary-real-visual-title">אמיתי</p>
+          <ul class="summary-real-visual-list">
+            <li>בחירת הפעולה (ε-greedy)</li>
+            <li>חישוב התגמול</li>
+            <li>עדכון טבלת ה-Q</li>
+            <li>דעיכת ε</li>
+            <li>הסטטיסטיקות והגרף</li>
+            <li>סימולציית האימון</li>
+            <li>השמירה ב-localStorage</li>
+          </ul>
+        </div>
+        <div class="summary-real-visual-col">
+          <p class="summary-real-visual-title">המחשה חזותית בלבד</p>
+          <ul class="summary-real-visual-list">
+            <li>אנימציית השוער</li>
+            <li>תנועת הכדור</li>
+            <li>אפקטי התוצאה (עצירה/שער)</li>
+            <li>הכרטיסים ההסברתיים</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="summary-highlight">
+        למידת חיזוק אינה אומרת שהמחשב תוכנת מראש עם התשובה הנכונה לכל מצב —
+        אלא שהוא בונה, בעצמו ובהדרגה, אסטרטגיה שממקסמת את התגמול מתוך ניסיון וטעייה.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-label">פרויקט אקדמי בקורס "יישומי בינה מלאכותית בעולם העסקי"</p>
+    <p class="footer-author">מאיה חרמאן / Maya Kharman</p>
+    <p class="footer-tech">טכנולוגיות: HTML, CSS, JavaScript, Q-Learning</p>
+    <p class="footer-note">סימולציה פדגוגית מקורית, פותחה לצורכי לימוד בלבד.</p>
+  </div>
+</footer>
+
+<script type="module" src="js/app.js" defer></script>
+</body>
+</html>

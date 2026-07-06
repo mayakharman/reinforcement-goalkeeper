@@ -1,0 +1,1694 @@
+/* =====================================================================
+   מעבדת השוער הלומד — עיצוב סטטי (שלב 1)
+   קובץ מאורגן לפי אחריות: אסימוני עיצוב, בסיס, פריסה, ורכיבים לכל מדור.
+   ===================================================================== */
+
+/* =====================================================================
+   1. Design Tokens — Colors, Spacing, Radii, Shadows, Transitions
+   ===================================================================== */
+:root {
+  /* Colors — deep navy base with lighter surfaces */
+  --color-bg: #0a0f1e;
+  --color-bg-alt: #0d1424;
+  --color-surface: #141b30;
+  --color-surface-alt: #1b2440;
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
+
+  --color-text: #edf1f9;
+  --color-text-muted: #9aa5bd;
+  --color-text-faint: #6b768f;
+
+  /* Accents */
+  --color-accent-green: #3ea36a;
+  --color-accent-green-strong: #4fc484;
+  --color-accent-gold: #e0ac47;
+  --color-accent-gold-strong: #f0c169;
+  --color-danger: #d9695f;
+
+  /* Spacing scale (8px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-pill: 999px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.45);
+
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+
+  /* Layout */
+  --container-width: 1240px;
+  /* Fallback before JS measures the real (possibly wrapped) header height. */
+  --header-offset: 96px;
+
+  /* Fonts — system stack only, no external imports */
+  --font-base: -apple-system, BlinkMacSystemFont, "Segoe UI", "Arial Hebrew",
+    "Noto Sans Hebrew", Arial, sans-serif;
+}
+
+/* =====================================================================
+   2. Reset & Base
+   ===================================================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-alt) 100%);
+  color: var(--color-text);
+  font-family: var(--font-base);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg {
+  max-width: 100%;
+  display: block;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+figure {
+  margin: 0;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+/* =====================================================================
+   3. Typography
+   ===================================================================== */
+h1 {
+  font-size: clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+h2 {
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem);
+  font-weight: 700;
+}
+
+h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.section-lede {
+  color: var(--color-text-muted);
+  max-width: 62ch;
+  margin-block-end: var(--space-5);
+  font-size: 1rem;
+}
+
+.control-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin-block-end: var(--space-2);
+  display: block;
+}
+
+/* =====================================================================
+   4. Layout Utilities
+   ===================================================================== */
+.container {
+  max-width: var(--container-width);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+section {
+  padding-block: var(--space-6);
+}
+
+/* JS keeps --header-offset in sync with the sticky header's real (possibly
+   wrapped) height, so scrolling to any nav anchor never hides its heading. */
+section[id] {
+  scroll-margin-top: calc(var(--header-offset) + var(--space-4));
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+.skip-link {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  top: -100px;
+  background: var(--color-accent-gold);
+  color: #17130a;
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  z-index: 100;
+  transition: top var(--transition-base);
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+/* =====================================================================
+   5. Focus States & Accessibility
+   ===================================================================== */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--color-accent-gold);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================================================
+   6. Header & Navigation
+   ===================================================================== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(10, 15, 30, 0.9);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-green-strong));
+  color: #06180f;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.brand-subtitle {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.main-nav ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+}
+
+.main-nav a {
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding-block: var(--space-1);
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.main-nav a:hover {
+  color: var(--color-text);
+  border-color: var(--color-accent-green-strong);
+}
+
+.badge {
+  font-size: 0.75rem;
+  color: var(--color-accent-gold-strong);
+  background: rgba(224, 172, 71, 0.12);
+  border: 1px solid rgba(224, 172, 71, 0.35);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+/* =====================================================================
+   7. Buttons & Form Controls
+   ===================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast),
+    background var(--transition-fast), opacity var(--transition-fast);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-accent-green), var(--color-accent-green-strong));
+  color: #06180f;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.btn-secondary:hover {
+  background: var(--color-surface);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-border-strong);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-accent-green-strong);
+}
+
+.btn-danger {
+  background: transparent;
+  color: var(--color-danger);
+  border-color: rgba(217, 105, 95, 0.5);
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none;
+  box-shadow: none;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  padding-block: var(--space-1);
+  cursor: pointer;
+}
+
+.radio-option:has(input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.radio-option input[type="radio"] {
+  accent-color: var(--color-accent-green-strong);
+}
+
+fieldset {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  min-inline-size: 0;
+}
+
+legend {
+  padding-inline: var(--space-2);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
+
+progress {
+  inline-size: 100%;
+  block-size: 12px;
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  border: none;
+  accent-color: var(--color-accent-gold);
+  background: var(--color-surface-alt);
+}
+
+progress::-webkit-progress-bar {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-pill);
+}
+
+progress::-webkit-progress-value {
+  background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-strong));
+  border-radius: var(--radius-pill);
+}
+
+/* =====================================================================
+   8. Card Base (shared by concepts / comparison / q-values)
+   ===================================================================== */
+.concept-card,
+.comparison-card,
+.game-area,
+.ai-panel,
+.note-box,
+.chart {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+/* =====================================================================
+   9. Hero Section
+   ===================================================================== */
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.hero-lede {
+  color: var(--color-text-muted);
+  margin-block: var(--space-4) var(--space-6);
+  max-width: 60ch;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.hero-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.goal-illustration {
+  position: relative;
+  inline-size: min(100%, 340px);
+  aspect-ratio: 4 / 3;
+}
+
+.hero-field {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 26px,
+      transparent 26px,
+      transparent 52px
+    ),
+    linear-gradient(180deg, #2f8f5c 0%, #226e48 55%, #1b5a3b 100%);
+}
+
+/* base structural rules for the goal/goalkeeper/ball — shared by the hero's
+   decorative illustration and the interactive lab scene, so both stay visually
+   consistent. Positioning/perspective specifics live in section 11a. */
+.goal-frame {
+  position: relative;
+  z-index: 1;
+  inline-size: 100%;
+  block-size: 80%;
+  overflow: visible;
+  background: transparent;
+}
+
+.hero-goal-frame {
+  margin-block-end: 0;
+}
+
+.goalkeeper {
+  position: absolute;
+  inset-inline-start: 50%;
+  bottom: 6%;
+  transform: translateX(-50%);
+  inline-size: 54px;
+  block-size: 92px;
+}
+
+.ball {
+  position: absolute;
+  inset-inline-start: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  inline-size: 26px;
+  block-size: 26px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #cfd6e4 70%);
+  box-shadow: var(--shadow-sm);
+}
+
+.hero-ball {
+  bottom: 2%;
+}
+
+/* =====================================================================
+   10. Concepts Section
+   ===================================================================== */
+.concepts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.concept-card {
+  padding: var(--space-5);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.concept-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.concept-card p {
+  color: var(--color-text-muted);
+  margin-block-start: var(--space-2);
+  font-size: 0.92rem;
+}
+
+.concept-icon {
+  display: grid;
+  place-items: center;
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  color: var(--color-accent-green-strong);
+  font-weight: 800;
+  margin-block-end: var(--space-3);
+}
+
+.concept-card--goal {
+  border-color: rgba(224, 172, 71, 0.45);
+  background: linear-gradient(160deg, var(--color-surface) 0%, rgba(224, 172, 71, 0.08) 100%);
+}
+
+.concept-card--goal .concept-icon {
+  background: rgba(224, 172, 71, 0.18);
+  color: var(--color-accent-gold-strong);
+}
+
+/* =====================================================================
+   11. Lab Section — Game Area + AI Decision Panel
+   ===================================================================== */
+.lab-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-5);
+}
+
+.game-area,
+.ai-panel {
+  padding: var(--space-5);
+}
+
+.pitch {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-block: var(--space-5);
+  min-block-size: 270px;
+  isolation: isolate;
+}
+
+.goal-frame--lab {
+  position: relative;
+  z-index: 1;
+  inline-size: min(100%, 320px);
+  block-size: 190px;
+  margin-block-end: 28px;
+}
+
+.ball--lab {
+  position: absolute;
+  bottom: calc(var(--space-5) - 8px);
+  inset-inline-start: 50%;
+  z-index: 3;
+}
+
+.kick-controls {
+  border-top: 1px solid var(--color-border);
+  padding-block-start: var(--space-5);
+  margin-block-start: var(--space-2);
+}
+
+.kick-instruction {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin-block-end: var(--space-3);
+}
+
+.kick-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+}
+
+.kick-buttons .btn {
+  flex: 1 1 100px;
+}
+
+.kick-buttons .btn.is-selected {
+  background: rgba(62, 163, 106, 0.18);
+  border-color: var(--color-accent-green-strong);
+  color: var(--color-text);
+}
+
+.btn-kick {
+  inline-size: 100%;
+}
+
+.score-strip {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+  margin-block-start: var(--space-5);
+}
+
+.score-item {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.score-item dt {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.score-item dd {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-inline-start: 0;
+  color: var(--color-accent-green-strong);
+}
+
+.decision-list {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+.decision-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block: var(--space-2);
+  border-bottom: 1px dashed var(--color-border);
+  font-size: 0.9rem;
+}
+
+.decision-item dt {
+  color: var(--color-text-muted);
+}
+
+.decision-item dd {
+  font-weight: 700;
+  margin-inline-start: 0;
+  text-align: end;
+}
+
+.q-values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+}
+
+.q-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-2);
+  text-align: center;
+}
+
+.q-card-label {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.q-card-value {
+  font-weight: 700;
+  color: var(--color-accent-gold-strong);
+}
+
+/* =====================================================================
+   11a. Realistic Game Scene — Field, Goal, Goalkeeper, Ball
+   ===================================================================== */
+
+/* Responsive distance tokens — one place to tune the whole scene's scale.
+   Overridden for narrow screens instead of duplicating every rule below. */
+.pitch {
+  --gk-dive-x: 100px;
+  --ball-fly-x: 120px;
+  --ball-goal-y: -132px;
+  --ball-save-y: -88px;
+  --ball-center-goal-y: -145px;
+  --ball-center-save-y: -92px;
+}
+
+@media (max-width: 360px) {
+  .pitch {
+    --gk-dive-x: 68px;
+    --ball-fly-x: 78px;
+    --ball-goal-y: -100px;
+    --ball-save-y: -68px;
+    --ball-center-goal-y: -112px;
+    --ball-center-save-y: -72px;
+  }
+}
+
+/* --- Field surface: grass, mowing stripes, lines, vignette --------------- */
+.field-surface {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-image:
+    radial-gradient(ellipse at 50% 45%, transparent 45%, rgba(0, 0, 0, 0.38) 100%),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.05) 0,
+      rgba(255, 255, 255, 0.05) 26px,
+      transparent 26px,
+      transparent 52px
+    ),
+    linear-gradient(180deg, #2f8f5c 0%, #226e48 55%, #1b5a3b 100%);
+}
+
+.pitch-box {
+  position: absolute;
+  inset-inline-start: 18%;
+  inline-size: 64%;
+  bottom: -2px;
+  block-size: 46%;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-block-end: none;
+  border-radius: 3px 3px 0 0;
+}
+
+.pitch-spot {
+  position: absolute;
+  inset-inline-start: 50%;
+  bottom: 34%;
+  transform: translateX(-50%);
+  inline-size: 7px;
+  block-size: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+}
+
+.pitch-goal-line {
+  position: absolute;
+  inset-inline-start: 6%;
+  inline-size: 88%;
+  bottom: 63%;
+  block-size: 2px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+/* --- Goal structure: posts, crossbar, net, perspective, shadow ---------- */
+
+.goal-shadow {
+  position: absolute;
+  /* percentage-width box centered via auto inline margins — direction-agnostic,
+     unlike inset-inline-start:50% + translateX(-50%), which only centers
+     correctly for fixed-pixel widths and overflows badly in RTL for a % width. */
+  inset-inline: 0;
+  margin-inline: auto;
+  bottom: -10px;
+  inline-size: 78%;
+  block-size: 16px;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4), transparent 75%);
+  filter: blur(2px);
+  z-index: 0;
+}
+
+/* only the net/posts/crossbar recede — the goalkeeper stays a sibling so it
+   never inherits this tilt, keeping it upright "in front of" the net. */
+.goal-structure {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  transform: perspective(600px) rotateX(6deg);
+  transform-origin: bottom center;
+}
+
+.goal-post {
+  position: absolute;
+  top: 0;
+  block-size: 100%;
+  inline-size: 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #d7dee8);
+  box-shadow: 1px 0 2px rgba(0, 0, 0, 0.3);
+}
+.goal-post--left {
+  inset-inline-start: 0;
+}
+.goal-post--right {
+  inset-inline-end: 0;
+}
+
+.goal-crossbar {
+  position: absolute;
+  top: 0;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 8px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #ffffff, #d7dee8);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+}
+
+.goal-net {
+  position: absolute;
+  inset: 6px 6px 0 6px;
+  background-image:
+    radial-gradient(ellipse at 50% 0%, rgba(0, 0, 0, 0.28), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.16) 0 1px, transparent 1px 14px);
+  transition: transform 250ms ease, filter 250ms ease;
+}
+
+.goal-net-side {
+  position: absolute;
+  top: 4%;
+  block-size: 96%;
+  inline-size: 16px;
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 10px);
+  opacity: 0.8;
+}
+.goal-net-side--left {
+  inset-inline-start: -14px;
+  clip-path: polygon(100% 0, 100% 100%, 0 88%, 0 12%);
+}
+.goal-net-side--right {
+  inset-inline-end: -14px;
+  clip-path: polygon(0 0, 0 100%, 100% 88%, 100% 12%);
+}
+
+/* --- Goalkeeper: layered CSS body, neutral stance + dive states --------- */
+#goalkeeper-lab {
+  z-index: 2;
+}
+
+.gk-shadow {
+  position: absolute;
+  bottom: -6px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 42px;
+  block-size: 9px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.45), transparent 72%);
+}
+
+.gk-head,
+.gk-torso,
+.gk-shorts,
+.gk-arm,
+.gk-leg {
+  position: absolute;
+  transition: transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.gk-head {
+  top: 0;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 19px;
+  block-size: 19px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #e7b98a, #c99a6c);
+  box-shadow: inset -2px -2px 0 rgba(0, 0, 0, 0.12);
+  z-index: 4;
+}
+
+.gk-torso {
+  top: 17px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 27px;
+  block-size: 33px;
+  border-radius: 9px 9px 6px 6px;
+  background: linear-gradient(180deg, var(--color-accent-gold-strong), var(--color-accent-gold));
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.08);
+  z-index: 3;
+}
+
+.gk-shorts {
+  top: 47px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 28px;
+  block-size: 12px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #1c2440, #141b30);
+  z-index: 3;
+}
+
+.gk-leg {
+  top: 56px;
+  inline-size: 10px;
+  block-size: 26px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #e7b98a, #c99a6c);
+  transform-origin: top center;
+  transform: rotate(var(--gk-leg-angle, 0deg));
+  z-index: 2;
+}
+.gk-leg--left {
+  inset-inline-start: 12px;
+  --gk-leg-angle: -4deg;
+}
+.gk-leg--right {
+  inset-inline-end: 12px;
+  --gk-leg-angle: 4deg;
+}
+
+.gk-sock {
+  position: absolute;
+  bottom: 8px;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  block-size: 11px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, var(--color-accent-green-strong), var(--color-accent-green));
+}
+
+.gk-shoe {
+  position: absolute;
+  bottom: -3px;
+  inset-inline-start: -2px;
+  inline-size: calc(100% + 4px);
+  block-size: 8px;
+  border-radius: 3px 3px 5px 5px;
+  background: #14181f;
+}
+
+.gk-arm {
+  top: 20px;
+  inline-size: 10px;
+  block-size: 30px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, var(--color-accent-gold-strong), var(--color-accent-gold));
+  transform-origin: top center;
+  transform: rotate(var(--gk-arm-angle, 0deg));
+  z-index: 2;
+}
+.gk-arm--left {
+  inset-inline-start: -2px;
+  --gk-arm-angle: 13deg;
+}
+.gk-arm--right {
+  inset-inline-end: -2px;
+  --gk-arm-angle: -13deg;
+}
+
+.gk-glove {
+  position: absolute;
+  bottom: -7px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 13px;
+  block-size: 13px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffffff, #cfd6e4 75%);
+  border: 2px solid #9aa5bd;
+}
+
+/* dive left: torso leans, both arms reach up-left, legs push off to the side */
+#goalkeeper-lab.is-dive-left .gk-head {
+  transform: translateX(calc(-50% - 5px));
+}
+#goalkeeper-lab.is-dive-left .gk-torso {
+  transform: translateX(calc(-50% - 4px)) rotate(-22deg);
+}
+#goalkeeper-lab.is-dive-left .gk-shorts {
+  transform: translateX(calc(-50% - 3px)) rotate(-8deg);
+}
+#goalkeeper-lab.is-dive-left .gk-arm--left {
+  --gk-arm-angle: -75deg;
+}
+#goalkeeper-lab.is-dive-left .gk-arm--right {
+  --gk-arm-angle: -40deg;
+}
+#goalkeeper-lab.is-dive-left .gk-leg--left {
+  --gk-leg-angle: -16deg;
+}
+#goalkeeper-lab.is-dive-left .gk-leg--right {
+  --gk-leg-angle: 10deg;
+}
+
+/* dive right: mirror of dive left */
+#goalkeeper-lab.is-dive-right .gk-head {
+  transform: translateX(calc(-50% + 5px));
+}
+#goalkeeper-lab.is-dive-right .gk-torso {
+  transform: translateX(calc(-50% + 4px)) rotate(22deg);
+}
+#goalkeeper-lab.is-dive-right .gk-shorts {
+  transform: translateX(calc(-50% + 3px)) rotate(8deg);
+}
+#goalkeeper-lab.is-dive-right .gk-arm--right {
+  --gk-arm-angle: 75deg;
+}
+#goalkeeper-lab.is-dive-right .gk-arm--left {
+  --gk-arm-angle: 40deg;
+}
+#goalkeeper-lab.is-dive-right .gk-leg--right {
+  --gk-leg-angle: 16deg;
+}
+#goalkeeper-lab.is-dive-right .gk-leg--left {
+  --gk-leg-angle: -10deg;
+}
+
+/* --- Ball: pentagon patches, shadow, flight rotation ------------------- */
+.ball--lab {
+  z-index: 3;
+}
+
+.ball--lab::before,
+.ball--lab::after {
+  content: "";
+  position: absolute;
+  background: #1c2233;
+  opacity: 0.92;
+}
+.ball--lab::before {
+  inset-inline-start: 30%;
+  top: 20%;
+  inline-size: 42%;
+  block-size: 42%;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+.ball--lab::after {
+  inset-inline-start: 60%;
+  top: 54%;
+  inline-size: 26%;
+  block-size: 26%;
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}
+
+.ball-shadow {
+  position: absolute;
+  bottom: -5px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  inline-size: 22px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.4), transparent 75%);
+  transition: opacity 800ms ease;
+}
+
+/* --- Kick movement: ball + goalkeeper animate together ------------------ */
+/* transition lives on the element itself so both the dive-in AND the
+   reset-back are animated the same way, regardless of which class is present. */
+#ball-lab,
+#goalkeeper-lab {
+  transition: transform 800ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+/* movement transforms are combined with each element's own centering
+   transform (translateX(-50%)) via calc(), so diving never breaks centering.
+   Plain .is-kick-* / .is-dive-* rules are a defensive fallback; app.js always
+   pairs the direction class with an .is-save/.is-goal outcome class, which
+   the more specific rules below use to pick the flight distance. */
+#ball-lab.is-kick-left {
+  transform: translate(calc(-50% - var(--ball-fly-x)), var(--ball-goal-y));
+}
+#ball-lab.is-kick-center {
+  transform: translate(-50%, var(--ball-center-goal-y));
+}
+#ball-lab.is-kick-right {
+  transform: translate(calc(-50% + var(--ball-fly-x)), var(--ball-goal-y));
+}
+
+#ball-lab.is-kick-left.is-goal {
+  transform: translate(calc(-50% - var(--ball-fly-x)), var(--ball-goal-y)) rotate(-620deg) scale(0.74);
+}
+#ball-lab.is-kick-left.is-save {
+  transform: translate(calc(-50% - var(--ball-fly-x)), var(--ball-save-y)) rotate(-460deg) scale(0.88);
+}
+#ball-lab.is-kick-center.is-goal {
+  transform: translate(-50%, var(--ball-center-goal-y)) rotate(540deg) scale(0.7);
+}
+#ball-lab.is-kick-center.is-save {
+  transform: translate(-50%, var(--ball-center-save-y)) rotate(400deg) scale(0.86);
+}
+#ball-lab.is-kick-right.is-goal {
+  transform: translate(calc(-50% + var(--ball-fly-x)), var(--ball-goal-y)) rotate(620deg) scale(0.74);
+}
+#ball-lab.is-kick-right.is-save {
+  transform: translate(calc(-50% + var(--ball-fly-x)), var(--ball-save-y)) rotate(460deg) scale(0.88);
+}
+
+#ball-lab.is-kick-left .ball-shadow,
+#ball-lab.is-kick-center .ball-shadow,
+#ball-lab.is-kick-right .ball-shadow {
+  opacity: 0.15;
+}
+
+#goalkeeper-lab.is-dive-left {
+  transform: translateX(calc(-50% - var(--gk-dive-x)));
+}
+#goalkeeper-lab.is-dive-center {
+  transform: translateX(-50%);
+}
+#goalkeeper-lab.is-dive-right {
+  transform: translateX(calc(-50% + var(--gk-dive-x)));
+}
+
+/* --- Impact feedback: glove pulse (save) / net pulse (goal) ------------- */
+@keyframes gk-glove-pulse {
+  0% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.5);
+  }
+  40% {
+    transform: translateX(-50%) scale(1.35);
+    box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.22);
+  }
+  100% {
+    transform: translateX(-50%) scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+#goalkeeper-lab.is-impact .gk-glove {
+  animation: gk-glove-pulse 450ms ease;
+}
+
+@keyframes goal-net-pulse {
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.035);
+    filter: brightness(1.35);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+#goal-net-lab.is-impact {
+  animation: goal-net-pulse 450ms ease;
+}
+
+/* --- Result badge -------------------------------------------------------- */
+.kick-result {
+  position: absolute;
+  top: 6%;
+  inset-inline-start: 50%;
+  transform: translateX(-50%) scale(0.85);
+  margin: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+  font-weight: 800;
+  font-size: 1.3rem;
+  padding: var(--space-2) var(--space-5);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease, transform 200ms ease;
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.kick-result.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+
+.kick-result.is-save {
+  border-color: rgba(62, 163, 106, 0.6);
+  color: var(--color-accent-green-strong);
+}
+
+.kick-result.is-goal {
+  border-color: rgba(217, 105, 95, 0.6);
+  color: var(--color-danger);
+}
+
+/* =====================================================================
+   12. Training Mode Section
+   ===================================================================== */
+.training-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-block-end: var(--space-5);
+}
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.training-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+.training-progress {
+  margin-block-end: var(--space-5);
+  max-inline-size: 480px;
+}
+
+.training-status {
+  margin-block-start: var(--space-2);
+  font-size: 0.88rem;
+  color: var(--color-accent-green-strong);
+  min-block-size: 1.3em;
+}
+
+.note-box {
+  padding: var(--space-4) var(--space-5);
+  border-inline-start: 4px solid var(--color-accent-gold);
+}
+
+.note-box p {
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+
+/* =====================================================================
+   13. Comparison Section
+   ===================================================================== */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+.comparison-card {
+  padding: var(--space-5);
+}
+
+.comparison-card--trained {
+  border-color: rgba(62, 163, 106, 0.5);
+  background: linear-gradient(160deg, var(--color-surface) 0%, rgba(62, 163, 106, 0.08) 100%);
+}
+
+.comparison-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-block-start: var(--space-3);
+}
+
+.comparison-item {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: 0.88rem;
+  padding-block: var(--space-1);
+  border-bottom: 1px dashed var(--color-border);
+}
+
+.comparison-item dt {
+  color: var(--color-text-muted);
+}
+
+.comparison-item dd {
+  font-weight: 700;
+  margin-inline-start: 0;
+  text-align: end;
+}
+
+.comparison-arrow {
+  justify-self: center;
+  font-size: 1.8rem;
+  color: var(--color-accent-gold-strong);
+  transform: rotate(180deg);
+}
+
+.comparison-tag {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-strong);
+  padding: 0.15rem var(--space-2);
+  border-radius: var(--radius-pill);
+  margin-inline-start: var(--space-2);
+  vertical-align: middle;
+}
+
+.comparison-tag--live {
+  color: var(--color-accent-green-strong);
+  border-color: rgba(62, 163, 106, 0.5);
+}
+
+.comparison-interpretation {
+  margin-block-start: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-alt);
+  border-inline-start: 4px solid var(--color-accent-gold);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+/* =====================================================================
+   14. Performance Graph Section
+   ===================================================================== */
+.chart {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.chart-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+.chart-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  text-align: center;
+}
+
+.chart-stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.chart-stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-accent-green-strong);
+}
+
+.chart-svg-wrap {
+  position: relative;
+  min-block-size: 200px;
+}
+
+.performance-svg {
+  inline-size: 100%;
+  block-size: 220px;
+  font-family: var(--font-base);
+}
+
+.graph-guide-line {
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1;
+}
+
+.graph-guide-label,
+.graph-axis-label {
+  fill: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.graph-line {
+  fill: none;
+  stroke: var(--color-accent-green-strong);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.graph-last-point {
+  fill: var(--color-accent-green-strong);
+}
+
+.graph-empty-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  padding-inline: var(--space-5);
+}
+
+.chart figcaption {
+  font-size: 0.8rem;
+  color: var(--color-text-faint);
+  text-align: center;
+}
+
+/* =====================================================================
+   15. Quiz Section
+   ===================================================================== */
+.quiz-form {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.quiz-question {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.quiz-question .radio-option {
+  cursor: pointer;
+}
+
+.quiz-question {
+  border-inline-start: 4px solid transparent;
+  transition: border-color var(--transition-base);
+}
+
+.quiz-question.is-correct {
+  border-inline-start-color: var(--color-accent-green-strong);
+}
+
+.quiz-question.is-incorrect {
+  border-inline-start-color: var(--color-danger);
+}
+
+.quiz-feedback {
+  font-size: 0.88rem;
+  color: var(--color-text-muted);
+  min-block-size: 1.3em;
+}
+
+.quiz-question.is-correct .quiz-feedback {
+  color: var(--color-accent-green-strong);
+}
+
+.quiz-question.is-incorrect .quiz-feedback {
+  color: var(--color-danger);
+}
+
+.quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.quiz-score {
+  font-weight: 700;
+  font-size: 1rem;
+  min-block-size: 1.3em;
+}
+
+/* =====================================================================
+   16. Final Summary Section
+   ===================================================================== */
+.summary-steps {
+  counter-reset: step;
+  display: grid;
+  gap: var(--space-3);
+  margin-block-end: var(--space-6);
+}
+
+.summary-steps li {
+  position: relative;
+  padding-inline-start: 2.5rem;
+  color: var(--color-text-muted);
+}
+
+.summary-steps li::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  inline-size: 1.8rem;
+  block-size: 1.8rem;
+  border-radius: 50%;
+  background: var(--color-surface-alt);
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-accent-green-strong);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.summary-subheading {
+  font-size: 1.05rem;
+  margin-block: var(--space-6) var(--space-3);
+}
+
+.summary-text {
+  color: var(--color-text-muted);
+  max-width: 68ch;
+  margin-block-end: var(--space-5);
+}
+
+.summary-glossary {
+  display: grid;
+  gap: var(--space-3);
+  margin-block-end: var(--space-5);
+}
+
+.glossary-item dt {
+  font-weight: 700;
+  color: var(--color-text);
+  font-size: 0.92rem;
+}
+
+.glossary-item dd {
+  margin-inline-start: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-block-start: 0.2rem;
+}
+
+.summary-real-visual {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-block-end: var(--space-6);
+}
+
+.summary-real-visual-col {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.summary-real-visual-title {
+  font-weight: 700;
+  margin-block-end: var(--space-2);
+  color: var(--color-accent-green-strong);
+}
+
+.summary-real-visual-list {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.summary-real-visual-list li::before {
+  content: "— ";
+  color: var(--color-text-faint);
+}
+
+.summary-highlight {
+  background: linear-gradient(135deg, rgba(224, 172, 71, 0.12), rgba(62, 163, 106, 0.1));
+  border: 1px solid rgba(224, 172, 71, 0.35);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  font-weight: 600;
+  font-size: 1.02rem;
+}
+
+/* =====================================================================
+   17. Footer
+   ===================================================================== */
+.site-footer {
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--space-6);
+  color: var(--color-text-faint);
+}
+
+.footer-inner {
+  display: grid;
+  gap: var(--space-1);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+/* =====================================================================
+   18. Responsive Breakpoints
+   ===================================================================== */
+
+/* Tablet ≥ 600px */
+@media (min-width: 600px) {
+  .concepts-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .training-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .score-strip {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .comparison-grid {
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .comparison-arrow {
+    transform: rotate(180deg) scale(1.2);
+  }
+}
+
+/* Small-desktop / large-tablet ≥ 768px */
+@media (min-width: 768px) {
+  .hero-inner {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .decision-list {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Desktop ≥ 1024px */
+@media (min-width: 1024px) {
+  .concepts-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .lab-grid {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+
+  .decision-list {
+    grid-template-columns: 1fr;
+  }
+
+  .main-nav ul {
+    gap: var(--space-2) var(--space-6);
+  }
+
+  .main-nav a {
+    font-size: 1rem;
+  }
+}
+
+/* Large desktop ≥ 1440px */
+@media (min-width: 1440px) {
+  :root {
+    --container-width: 1320px;
+  }
+
+  .concepts-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+
+  .concept-card--goal {
+    grid-column: span 6;
+  }
+}
